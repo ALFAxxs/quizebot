@@ -1,0 +1,45 @@
+{% extends "panel/base.html" %}
+{% block title %}Natijalar{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Natijalar</h1><p class="muted" style="margin:6px 0 0">Topildi: {{ total }}</p></div></div>
+
+<form method="get" class="panel filters" style="margin-bottom:18px">
+  <div><label class="small muted">Qidiruv</label>{{ form.q }}</div>
+  <div><label class="small muted">Paket</label>{{ form.package }}</div>
+  <div><label class="small muted">Til</label>{{ form.language }}</div>
+  <div><label class="small muted">Holat</label>{{ form.status }}</div>
+  <div><label class="small muted">Sanadan</label>{{ form.date_from }}</div>
+  <div><label class="small muted">Sanagacha</label>{{ form.date_to }}</div>
+  <div><label class="small muted">Min. natija</label>{{ form.min_pct }}</div>
+  <div class="actions"><button class="btn">Filtrlash</button>{% if request.GET %}<a class="btn ghost" href="{% url 'panel:result_list' %}">Tozalash</a>{% endif %}</div>
+</form>
+
+<div class="panel" style="padding:0">
+{% if page.object_list %}
+<div class="table-wrap"><table class="t">
+  <thead><tr>
+    <th>F.I.Sh.</th><th>Telefon</th><th>Telegram ID</th><th>Til</th><th>Paket</th>
+    <th class="num"><a href="?{{ querystring }}&sort={% if request.GET.sort == '-percentage' %}percentage{% else %}-percentage{% endif %}">Umumiy</a></th>
+    <th><a href="?{{ querystring }}&sort={% if request.GET.sort == 'started_at' %}-started_at{% else %}started_at{% endif %}">Boshlangan / tugagan</a></th>
+  </tr></thead>
+  <tbody>
+  {% for s in page %}
+  <tr class="click" onclick="location.href='{% url 'panel:result_detail' s.pk %}'">
+    <td><a href="{% url 'panel:result_detail' s.pk %}"><b>{{ s.user.full_name|default:"—" }}</b></a>{% if not s.is_finished %}<div><span class="tag warn">Jarayonda · {{ s.current_index }}/{{ s.total_questions }}</span></div>{% endif %}</td>
+    <td class="nowrap">{{ s.user.phone }}</td>
+    <td class="small">{{ s.user.telegram_id }}</td>
+    <td>{{ s.language|upper }}</td>
+    <td>{{ s.package.name }}</td>
+    {% if s.is_finished %}
+    <td class="num"><span class="pct-big">{{ s.percentage|floatformat:1 }}%</span><div class="muted small">{{ s.total_correct }}/{{ s.total_questions }}</div></td>
+    {% else %}<td class="num muted">—</td>{% endif %}
+    <td class="nowrap small">{{ s.started_at|date:"d.m.Y H:i" }}<div class="muted">{% if s.finished_at %}{{ s.finished_at|date:"d.m.Y H:i" }} · {{ s.duration_display }}{% else %}—{% endif %}</div></td>
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}
+  <div class="empty">Tanlangan filtrlar bo'yicha natija topilmadi. Filtrlarni o'zgartiring yoki tozalang.</div>
+{% endif %}
+</div>
+{% include "panel/_pager.html" %}
+{% endblock %}

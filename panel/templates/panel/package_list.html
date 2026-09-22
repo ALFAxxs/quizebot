@@ -1,0 +1,31 @@
+{% extends "panel/base.html" %}
+{% block title %}Paketlar{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Paketlar</h1><p class="muted" style="margin:6px 0 0">Bot har bir foydalanuvchiga faol paketlardan birini tasodifiy tanlab beradi.</p></div>
+  <div class="actions"><a class="btn primary" href="{% url 'panel:package_add' %}">Yangi paket</a></div></div>
+<div class="panel" style="padding:0">
+{% if packages %}
+<div class="table-wrap"><table class="t">
+  <thead><tr><th>Nomi</th><th>Holat</th><th class="num">Bo'limlar</th><th class="num">Faol savollar</th><th class="num">Topshirilgan</th><th></th></tr></thead>
+  <tbody>
+  {% for p in packages %}
+  <tr>
+    <td><a href="{% url 'panel:package_detail' p.pk %}"><b>{{ p.name }}</b></a>{% if p.description %}<div class="muted small">{{ p.description|truncatechars:80 }}</div>{% endif %}</td>
+    <td>{% if p.is_active %}<span class="tag ok">Faol</span>{% else %}<span class="tag">Nofaol</span>{% endif %}</td>
+    <td class="num">{{ p.part_count }}</td>
+    <td class="num">{{ p.q_count }}</td>
+    <td class="num">{{ p.s_count }}</td>
+    <td class="num nowrap">
+      <form class="inline" method="post" action="{% url 'panel:package_toggle' p.pk %}">{% csrf_token %}
+        <button class="btn sm">{% if p.is_active %}O'chirish{% else %}Faollashtirish{% endif %}</button></form>
+      <a class="btn sm" href="{% url 'panel:part_add' p.pk %}">Bo'lim qo'shish</a>
+      <a class="btn sm" href="{% url 'panel:package_detail' p.pk %}">Ochish</a>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}
+  <div class="empty">Hali paket yo'q. Birinchi paketni yarating, so'ng unga o'zingiz xohlagan bo'limlarni qo'shing.<br><a class="btn primary" href="{% url 'panel:package_add' %}">Yangi paket</a></div>
+{% endif %}
+</div>
+{% endblock %}

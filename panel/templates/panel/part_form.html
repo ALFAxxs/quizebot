@@ -1,0 +1,15 @@
+{% extends "panel/base.html" %}
+{% block title %}Bo'lim{% endblock %}
+{% block content %}
+<div class="head"><div>
+  <div class="crumbs"><a href="{% url 'panel:package_list' %}">Paketlar</a> / <a href="{% url 'panel:package_detail' package.pk %}">{{ package.name }}</a>{% if part %} / <a href="{% url 'panel:part_detail' part.pk %}">{{ part.title_en }}</a>{% endif %}</div>
+  <h1>{% if part %}Bo'limni tahrirlash{% else %}Yangi bo'lim{% endif %}</h1></div></div>
+<form method="post" class="panel" style="max-width:720px">{% csrf_token %}
+  {% for e in form.non_field_errors %}<div class="msg error">{{ e }}</div>{% endfor %}
+  <div class="grid g2">{% with field=form.title_ru %}{% include "panel/_field.html" %}{% endwith %}{% with field=form.title_en %}{% include "panel/_field.html" %}{% endwith %}</div>
+  <div class="grid g2">{% with field=form.order %}{% include "panel/_field.html" %}{% endwith %}</div>
+  <div class="grid g2">{% with field=form.instruction_ru %}{% include "panel/_field.html" %}{% endwith %}{% with field=form.instruction_en %}{% include "panel/_field.html" %}{% endwith %}</div>
+  <p class="muted small" style="margin-top:0">Ko'rsatma bo'limning birinchi savolida foydalanuvchiga ko'rsatiladi.</p>
+  <div class="actions"><button class="btn primary">Saqlash</button><a class="btn" href="{% url 'panel:package_detail' package.pk %}">Bekor qilish</a></div>
+</form>
+{% endblock %}

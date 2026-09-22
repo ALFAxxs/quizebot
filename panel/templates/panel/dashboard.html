@@ -1,0 +1,53 @@
+{% extends "panel/base.html" %}{% load l10n %}
+{% block title %}Bosh sahifa{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Bosh sahifa</h1></div>
+  <div class="actions"><a class="btn primary" href="{% url 'panel:result_list' %}">Barcha natijalar</a></div>
+</div>
+
+<div class="panel stats">
+  <div class="stat"><b>{{ stats.finished }}</b><span>Yakunlangan testlar</span></div>
+  <div class="stat"><b>{{ stats.today }}</b><span>Bugun</span></div>
+  <div class="stat"><b>{{ stats.in_progress }}</b><span>Hozir ishlayapti</span></div>
+  <div class="stat"><b>{{ stats.users }}</b><span>Foydalanuvchilar</span></div>
+  <div class="stat"><b>{{ stats.avg|floatformat:1 }}%</b><span>O'rtacha natija</span></div>
+</div>
+
+<div class="grid g3" style="margin-top:18px;grid-template-columns:1fr 2fr">
+  <div class="panel">
+    <h2>Bo'limlar bo'yicha o'rtacha</h2>
+    <div class="sheet">
+      {% for name, pct in part_avgs %}
+      <div>
+        <div style="display:flex;justify-content:space-between"><span class="tag">{{ name }}</span><b>{{ pct }}%</b></div>
+        <div class="bar" style="height:8px;margin-top:8px"><i style="width:{{ pct|unlocalize }}%"></i></div>
+      </div>
+      {% empty %}
+      <p class="muted small">Hali natija yo'q.</p>
+      {% endfor %}
+    </div>
+    <p class="muted small" style="margin:18px 0 0">{{ stats.packages_active }} ta faol paket, jami {{ stats.questions }} ta faol savol.
+      <a href="{% url 'panel:package_list' %}">Paketlarni boshqarish</a></p>
+  </div>
+  <div class="panel" style="padding:0">
+    <div style="padding:18px 20px 6px"><h2>So'nggi natijalar</h2></div>
+    {% if recent %}
+    <div class="table-wrap"><table class="t">
+      <thead><tr><th>F.I.Sh.</th><th>Paket</th><th>Til</th><th class="num">Natija</th><th>Tugagan</th></tr></thead>
+      <tbody>
+      {% for s in recent %}
+        <tr class="click" onclick="location.href='{% url 'panel:result_detail' s.pk %}'">
+          <td><a href="{% url 'panel:result_detail' s.pk %}">{{ s.user.full_name|default:s.user.telegram_id }}</a><div class="muted small">{{ s.user.phone }}</div></td>
+          <td>{{ s.package.name }}</td>
+          <td>{{ s.language|upper }}</td>
+          <td class="num"><span class="pct-big">{{ s.percentage|floatformat:1 }}%</span><div class="muted small">{{ s.total_correct }}/{{ s.total_questions }}</div></td>
+          <td class="nowrap small">{{ s.finished_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody></table></div>
+    {% else %}
+      <div class="empty">Hali hech kim testni yakunlamagan. Botni ishga tushirib, /start bosib sinab ko'ring.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

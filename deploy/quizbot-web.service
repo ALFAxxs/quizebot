@@ -1,0 +1,15 @@
+[Unit]
+Description=QuizBot admin panel (gunicorn)
+After=network.target
+
+[Service]
+User=quizbot
+Group=www-data
+WorkingDirectory=/opt/quizbot
+EnvironmentFile=/opt/quizbot/.env
+ExecStart=/opt/quizbot/venv/bin/gunicorn config.wsgi:application --bind 127.0.0.1:8000 --workers 3 --timeout 60
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

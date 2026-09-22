@@ -1,0 +1,16 @@
+{% load static %}<!doctype html>
+<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kirish · Test panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'panel/panel.css' %}"></head>
+<body><div class="login"><div class="panel">
+  <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i></span>Test panel</div>
+  <h2>Panelga kirish</h2>
+  {% if form.errors %}<div class="msg error" style="margin-bottom:14px">Login yoki parol noto'g'ri. Qayta kiriting.</div>{% endif %}
+  <form method="post">{% csrf_token %}
+    <div class="field"><label for="id_username">Login</label><input class="input" type="text" name="username" id="id_username" autofocus required></div>
+    <div class="field"><label for="id_password">Parol</label><input class="input" type="password" name="password" id="id_password" required></div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn primary" style="width:100%;justify-content:center">Kirish</button>
+  </form>
+</div></div></body></html>

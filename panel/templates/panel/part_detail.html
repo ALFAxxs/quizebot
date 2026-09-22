@@ -1,0 +1,35 @@
+{% extends "panel/base.html" %}
+{% block title %}{{ part.title_en }}{% endblock %}
+{% block content %}
+<div class="head"><div>
+  <div class="crumbs"><a href="{% url 'panel:package_list' %}">Paketlar</a> / <a href="{% url 'panel:package_detail' package.pk %}">{{ package.name }}</a></div>
+  <h1>{{ part.title_en }} <span class="tag">{{ part.title_ru }}</span></h1></div>
+  <div class="actions">
+    <a class="btn" href="{% url 'panel:part_edit' part.pk %}">Bo'limni tahrirlash</a>
+    <form class="inline" method="post" action="{% url 'panel:part_delete' part.pk %}" onsubmit="return confirm('Bo\'lim va uning savollari o\'chiriladi. Davom etasizmi?')">{% csrf_token %}<button class="btn danger">Bo'limni o'chirish</button></form>
+    <a class="btn primary" href="{% url 'panel:question_add' part.pk %}">Savol qo'shish</a>
+  </div></div>
+
+{% for q in questions %}
+<div class="qcard {% if not q.is_active %}off{% endif %}">
+  <div class="qhead">
+    <div style="min-width:0">
+      <div class="qtext"><span class="qnum">{{ q.order }}.</span>{{ q.text_ru }}</div>
+      <div class="qtext-en">{{ q.text_en }}</div>
+      {% if q.image %}<img class="qimg" src="{{ q.image.url }}" alt="Savol rasmi">{% endif %}
+    </div>
+    <div class="actions" style="flex:none">
+      {% if not q.is_active %}<span class="tag">Nofaol</span>{% endif %}
+      <a class="btn sm" href="{% url 'panel:question_edit' q.pk %}">Tahrirlash</a>
+      <form class="inline" method="post" action="{% url 'panel:question_delete' q.pk %}" onsubmit="return confirm('Savol o\'chirilsinmi?')">{% csrf_token %}<button class="btn sm danger">O'chirish</button></form>
+    </div>
+  </div>
+  <ul class="opts">
+    {% for o in q.options.all %}<li class="{% if o.is_correct %}correct{% endif %}"><span class="ltr">{% cycle 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' %}</span><span>{{ o.text_ru }}{% if o.text_en != o.text_ru %} <span class="muted">/ {{ o.text_en }}</span>{% endif %}</span></li>{% endfor %}
+    {% resetcycle %}
+  </ul>
+</div>
+{% empty %}
+<div class="panel empty">Bu bo'limda hali savol yo'q.<br><a class="btn primary" href="{% url 'panel:question_add' part.pk %}">Birinchi savolni qo'shish</a></div>
+{% endfor %}
+{% endblock %}

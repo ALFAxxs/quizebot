@@ -1,0 +1,12 @@
+{% extends "panel/base.html" %}
+{% block title %}{% if package %}Paketni tahrirlash{% else %}Yangi paket{% endif %}{% endblock %}
+{% block content %}
+<div class="head"><div>
+  <div class="crumbs"><a href="{% url 'panel:package_list' %}">Paketlar</a>{% if package %} / <a href="{% url 'panel:package_detail' package.pk %}">{{ package.name }}</a>{% endif %}</div>
+  <h1>{% if package %}Paketni tahrirlash{% else %}Yangi paket{% endif %}</h1></div></div>
+<form method="post" class="panel" style="max-width:640px">{% csrf_token %}
+  {% for field in form %}{% include "panel/_field.html" %}{% endfor %}
+  <div class="actions"><button class="btn primary">Saqlash</button>
+  <a class="btn" href="{% if package %}{% url 'panel:package_detail' package.pk %}{% else %}{% url 'panel:package_list' %}{% endif %}">Bekor qilish</a></div>
+</form>
+{% endblock %}

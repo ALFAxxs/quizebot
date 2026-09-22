@@ -1,0 +1,7 @@
+{% if page.paginator.num_pages > 1 %}
+<div class="pager">
+  <span class="muted">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_previous %}<a class="btn sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">Oldingi</a>{% endif %}
+  {% if page.has_next %}<a class="btn sm" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">Keyingi</a>{% endif %}
+</div>
+{% endif %}

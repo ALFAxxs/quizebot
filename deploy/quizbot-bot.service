@@ -1,0 +1,16 @@
+[Unit]
+Description=QuizBot Telegram bot (aiogram)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=quizbot
+Group=www-data
+WorkingDirectory=/opt/quizbot
+EnvironmentFile=/opt/quizbot/.env
+ExecStart=/opt/quizbot/venv/bin/python manage.py runbot
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

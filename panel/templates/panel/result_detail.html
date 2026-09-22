@@ -1,0 +1,66 @@
+{% extends "panel/base.html" %}
+{% block title %}{{ s.user.full_name }} — natija{% endblock %}
+{% block content %}
+<div class="head"><div>
+  <div class="crumbs"><a href="{% url 'panel:result_list' %}">Natijalar</a></div>
+  <h1>{{ s.user.full_name|default:s.user.telegram_id }}</h1></div>
+  <div class="actions">
+    <form class="inline" method="post" action="{% url 'panel:result_delete' s.pk %}" onsubmit="return confirm('Natija o\'chirilsinmi? Foydalanuvchi testni qayta topshira oladi.')">{% csrf_token %}<button class="btn danger">Natijani o'chirish</button></form>
+  </div></div>
+
+<div class="grid" style="grid-template-columns:1fr 1.6fr">
+  <div class="panel">
+    <h2>Ma'lumotlar</h2>
+    <dl class="kv">
+      <dt>Familiya</dt><dd>{{ s.user.last_name|default:"—" }}</dd>
+      <dt>Ism</dt><dd>{{ s.user.first_name|default:"—" }}</dd>
+      <dt>Telefon</dt><dd>{{ s.user.phone|default:"—" }}</dd>
+      <dt>Telegram ID</dt><dd>{{ s.user.telegram_id }}</dd>
+      <dt>Username</dt><dd>{% if s.user.username %}<a href="https://t.me/{{ s.user.username }}" target="_blank" rel="noopener">@{{ s.user.username }}</a>{% else %}—{% endif %}</dd>
+      <dt>Til</dt><dd>{{ s.get_language_display }}</dd>
+      <dt>Paket</dt><dd><a href="{% url 'panel:package_detail' s.package.pk %}">{{ s.package.name }}</a></dd>
+      <dt>Holat</dt><dd>{% if s.is_finished %}<span class="tag ok">Yakunlangan</span>{% else %}<span class="tag warn">Jarayonda</span>{% endif %}</dd>
+      <dt>Boshlangan</dt><dd>{{ s.started_at|date:"d.m.Y H:i:s" }}</dd>
+      <dt>Tugagan</dt><dd>{{ s.finished_at|date:"d.m.Y H:i:s"|default:"—" }}</dd>
+      <dt>Davomiylik</dt><dd>{{ s.duration_display }}</dd>
+    </dl>
+  </div>
+
+  <div class="panel">
+    <h2>Javoblar varaqasi</h2>
+    <div class="sheet">
+      {% for p in parts %}
+      <div class="sheet-row">
+        <span class="lbl"><span class="tag">{{ p.title }}</span></span>
+        <div class="bubbles">
+          {% for r in rows %}{% if r.part_id == p.part_id %}
+            <a href="#q{{ r.n }}" class="bubble {% if r.answer %}{% if r.answer.is_correct %}ok{% else %}bad{% endif %}{% endif %}" title="Savol {{ r.n }}">{{ r.n }}</a>
+          {% endif %}{% endfor %}
+        </div>
+        <span class="res">{{ p.correct }}/{{ p.total }} <span class="muted small">· {{ p.pct }}%</span></span>
+      </div>
+      {% endfor %}
+      <div class="total-line">
+        <b>{{ s.percentage|floatformat:1 }}%</b>
+        <span>{{ s.total_correct }} to'g'ri, {% if s.is_finished %}{{ s.wrong_count }} noto'g'ri{% else %}{{ s.current_index }}/{{ s.total_questions }} javob berilgan{% endif %}, jami {{ s.total_questions }} ta savol</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Savollar va tanlangan javoblar</h2>
+  {% for r in rows %}
+  <div class="qcard" id="q{{ r.n }}">
+    <div class="qhead"><div class="qtext"><span class="qnum">{{ r.n }}.</span>{{ r.text }}</div>
+      <div style="flex:none">{% if r.answer %}{% if r.answer.is_correct %}<span class="tag ok">To'g'ri</span>{% else %}<span class="tag bad">Noto'g'ri</span>{% endif %}{% else %}<span class="tag">Javob yo'q</span>{% endif %}
+      <span class="tag">{{ r.part_title }}</span></div></div>
+    <ul class="opts">
+      {% for o, text in r.options %}
+      <li class="{% if o.is_correct %}correct{% endif %} {% if r.answer and r.answer.selected_option_id == o.id %}picked{% endif %}"><span class="ltr">{% cycle 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I' 'J' %}</span><span>{{ text }}</span></li>
+      {% endfor %}{% resetcycle %}
+    </ul>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

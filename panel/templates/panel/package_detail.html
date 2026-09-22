@@ -1,0 +1,44 @@
+{% extends "panel/base.html" %}
+{% block title %}{{ package.name }}{% endblock %}
+{% block content %}
+<div class="head"><div>
+  <div class="crumbs"><a href="{% url 'panel:package_list' %}">Paketlar</a></div>
+  <h1>{{ package.name }} {% if package.is_active %}<span class="tag ok">Faol</span>{% else %}<span class="tag">Nofaol</span>{% endif %}</h1>
+  {% if package.description %}<p class="muted" style="margin:6px 0 0">{{ package.description }}</p>{% endif %}</div>
+  <div class="actions">
+    <form class="inline" method="post" action="{% url 'panel:package_toggle' package.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+      <button class="btn">{% if package.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button></form>
+    <form class="inline" method="post" action="{% url 'panel:package_duplicate' package.pk %}">{% csrf_token %}<button class="btn">Nusxa olish</button></form>
+    <a class="btn" href="{% url 'panel:package_edit' package.pk %}">Tahrirlash</a>
+    <form class="inline" method="post" action="{% url 'panel:package_delete' package.pk %}" onsubmit="return confirm('Paket va undagi barcha savollar o\'chiriladi. Davom etasizmi?')">{% csrf_token %}<button class="btn danger">O'chirish</button></form>
+  </div></div>
+
+<div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <h2 style="margin:0">Bo'limlar ketma-ketligi</h2>
+    <a class="btn sm" href="{% url 'panel:part_add' package.pk %}">Bo'lim qo'shish</a>
+  </div>
+  <div class="parts">
+  {% for part in parts %}
+    <div class="part">
+      <div class="reorder">
+        <form class="inline" method="post" action="{% url 'panel:part_move' part.pk 'up' %}">{% csrf_token %}
+          <button class="btn sm ghost" type="submit" title="Yuqoriga" aria-label="Yuqoriga" {% if forloop.first %}disabled{% endif %}>↑</button></form>
+        <form class="inline" method="post" action="{% url 'panel:part_move' part.pk 'down' %}">{% csrf_token %}
+          <button class="btn sm ghost" type="submit" title="Pastga" aria-label="Pastga" {% if forloop.last %}disabled{% endif %}>↓</button></form>
+      </div>
+      <div class="n">{{ forloop.counter }}</div>
+      <div>
+        <div class="t"><a href="{% url 'panel:part_detail' part.pk %}">Part {{ forloop.counter }} — {{ part.title_en }}</a></div>
+        <div class="muted small">{{ part.title_ru }} · {{ part.q_count }} ta faol savol{% if part.q_all != part.q_count %} ({{ part.q_all }} ta jami){% endif %}</div>
+      </div>
+      <div class="actions"><a class="btn sm" href="{% url 'panel:part_detail' part.pk %}">Savollar</a><a class="btn sm" href="{% url 'panel:question_add' part.pk %}">Savol qo'shish</a></div>
+    </div>
+  {% empty %}
+    <div class="empty">Bu paketda bo'lim yo'q. <a href="{% url 'panel:part_add' package.pk %}">Bo'lim qo'shing</a>.</div>
+  {% endfor %}
+  </div>
+  <p class="muted small" style="margin:14px 0 0">Tartib «Tartib» maydoni bo'yicha belgilanadi. Bo'sh bo'limlar testda ko'rsatilmaydi.
+  {% if package.shuffle_questions %}Bo'lim ichidagi savollar har bir foydalanuvchi uchun aralashtiriladi.{% endif %}</p>
+</div>
+{% endblock %}

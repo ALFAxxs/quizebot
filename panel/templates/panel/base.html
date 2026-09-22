@@ -1,0 +1,40 @@
+{% load static %}<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Test panel{% endblock %} · Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'panel/panel.css' %}">
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i></span>
+      Test panel
+    </div>
+    <a class="nav {% if nav == 'dashboard' %}active{% endif %}" href="{% url 'panel:dashboard' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      Bosh sahifa</a>
+    <a class="nav {% if nav == 'results' %}active{% endif %}" href="{% url 'panel:result_list' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      Natijalar</a>
+    <a class="nav {% if nav == 'packages' %}active{% endif %}" href="{% url 'panel:package_list' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+      Paketlar va savollar</a>
+    <a class="nav {% if nav == 'users' %}active{% endif %}" href="{% url 'panel:user_list' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="4"/><path d="M1 21c0-4 4-7 8-7s8 3 8 7"/><path d="M17 4a4 4 0 010 8M23 21c0-3-2-5.5-5-6.5"/></svg>
+      Foydalanuvchilar</a>
+    <div class="spacer"></div>
+    <div class="who">{{ request.user.get_username }} · <form class="inline" method="post" action="{% url 'panel:logout' %}">{% csrf_token %}<button class="btn ghost sm" style="color:#C9CEE0;padding:0">Chiqish</button></form></div>
+  </aside>
+  <main class="main">
+    {% if messages %}<div class="msgs">{% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}</div>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% block scripts %}{% endblock %}
+</body>
+</html>

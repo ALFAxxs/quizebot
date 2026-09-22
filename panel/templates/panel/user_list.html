@@ -1,0 +1,30 @@
+{% extends "panel/base.html" %}
+{% block title %}Foydalanuvchilar{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Foydalanuvchilar</h1></div>
+  <form method="get" class="actions"><input class="input" name="q" value="{{ q }}" placeholder="Ism, telefon, username yoki ID" style="width:280px"><button class="btn">Qidirish</button></form></div>
+<div class="panel" style="padding:0">
+{% if page.object_list %}
+<div class="table-wrap"><table class="t">
+  <thead><tr><th>F.I.Sh.</th><th>Telefon</th><th>Telegram ID</th><th>Username</th><th>Til</th><th class="num">Testlar</th><th class="num">O'rtacha</th><th>Ro'yxatdan o'tgan</th><th></th></tr></thead>
+  <tbody>
+  {% for u in page %}
+  <tr>
+    <td><b>{{ u.full_name|default:"—" }}</b></td>
+    <td class="nowrap">{{ u.phone|default:"—" }}</td>
+    <td>{{ u.telegram_id }}</td>
+    <td>{% if u.username %}<a href="https://t.me/{{ u.username }}" target="_blank" rel="noopener">@{{ u.username }}</a>{% else %}—{% endif %}</td>
+    <td>{{ u.language|upper|default:"—" }}</td>
+    <td class="num">{{ u.tests }}</td>
+    <td class="num">{% if u.best is not None %}{{ u.best|floatformat:1 }}%{% else %}—{% endif %}</td>
+    <td class="nowrap small">{{ u.created_at|date:"d.m.Y H:i" }}</td>
+    <td class="num"><a class="btn sm" href="{% url 'panel:result_list' %}?q={{ u.telegram_id }}">Natijalar</a></td>
+  </tr>
+  {% endfor %}
+  </tbody></table></div>
+{% else %}
+  <div class="empty">{% if q %}«{{ q }}» bo'yicha hech kim topilmadi.{% else %}Hali botdan hech kim ro'yxatdan o'tmagan.{% endif %}</div>
+{% endif %}
+</div>
+{% with querystring="q="|add:q %}{% include "panel/_pager.html" %}{% endwith %}
+{% endblock %}
