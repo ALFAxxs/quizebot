@@ -26,7 +26,21 @@ staff = staff_member_required(login_url="panel:login")
 
 class LoginView(auth_views.LoginView):
     template_name = "panel/login.html"
-    redirect_authenticated_user = True
+
+    def dispatch(self, request, *args, **kwargs):
+        # redirect_authenticated_user=True faqat is_authenticated'ni tekshiradi — agar
+        # kirgan foydalanuvchi staff bo'lmasa, u /panel/ga (staff_member_required orqali)
+        # va bu yerga cheksiz qaytariladi. Shuning uchun is_staff'ni ham tekshiramiz.
+        if request.user.is_authenticated and request.user.is_staff:
+            return redirect("panel:dashboard")
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if not user.is_active or not user.is_staff:
+            form.add_error(None, "Sizda admin panelga kirish huquqi yo'q.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 # ------------------------------------------------------------ dashboard
